@@ -93,20 +93,19 @@ UNIT_CONVERSIONS = {
     "kcal": 4.184e-6 # GJ per kcal
 }
 
-# Currency data with flags
 CURRENCY_DATA = {
-    "USD": {"flag": "🇺🇸", "name": "US Dollar"},
-    "EUR": {"flag": "🇪🇺", "name": "Euro"},
-    "GBP": {"flag": "🇬🇧", "name": "British Pound"},
-    "JPY": {"flag": "🇯🇵", "name": "Japanese Yen"},
-    "CAD": {"flag": "🇨🇦", "name": "Canadian Dollar"},
-    "AUD": {"flag": "🇦🇺", "name": "Australian Dollar"},
-    "CHF": {"flag": "🇨🇭", "name": "Swiss Franc"},
-    "CNY": {"flag": "🇨🇳", "name": "Chinese Yuan"},
-    "INR": {"flag": "🇮🇳", "name": "Indian Rupee"},
-    "BRL": {"flag": "🇧🇷", "name": "Brazilian Real"},
-    "RUB": {"flag": "🇷🇺", "name": "Russian Ruble"},
-    "MXN": {"flag": "🇲🇽", "name": "Mexican Peso"}
+    "USD": {"region": "USA"},
+    "EUR": {"region": "Europe"},
+    "GBP": {"region": "United Kingdom"},
+    "JPY": {"region": "Japan"},
+    "CAD": {"region": "Canada"},
+    "AUD": {"region": "Australia"},
+    "CHF": {"region": "Switzerland"},
+    "CNY": {"region": "China"},
+    "INR": {"region": "Indian Rupee"},
+    "BRL": {"region": "Brazil"},
+    "RUB": {"region": "Russia"},
+    "MXN": {"region": "Mexico"}
 }
 
 def calculate_density_from_api(api_gravity):
@@ -237,9 +236,8 @@ def format_number(value, decimals=2):
         return f"{value:.{decimals+2}f}"
 
 def get_currency_display(currency_code):
-    """Returns formatted currency string with flag and code"""
-    currency_info = CURRENCY_DATA.get(currency_code, {"flag": "🌍", "name": currency_code})
-    return f"{currency_info['flag']} {currency_code}"
+    region = CURRENCY_DATA.get(currency_code, {}).get("region", "")
+    return f"{currency_code} – {region}"
 
 st.markdown('<h1 class="main-header">🏭 Commodities Trading Converter</h1>', unsafe_allow_html=True)
 tab1, tab2, tab3 = st.tabs(["🔄 Unit & Volume Conversion", "💱 Currency Conversion", "📖 Glossary"])
