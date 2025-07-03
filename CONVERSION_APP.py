@@ -15,143 +15,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Initialize session state
-if 'conversion_history' not in st.session_state:
-    st.session_state.conversion_history = []
-if 'bookmarks' not in st.session_state:
-    st.session_state.bookmarks = []
-if 'dark_mode' not in st.session_state:
-    st.session_state.dark_mode = False
-if 'auto_calculate' not in st.session_state:
-    st.session_state.auto_calculate = True
-if 'wizard_mode' not in st.session_state:
-    st.session_state.wizard_mode = False
-
-# Dark/Light Mode Styling
-def get_theme_styles():
-    if st.session_state.dark_mode:
-        return """
-        <style>
-            .stApp {
-                background-color: #0e1117;
-                color: #fafafa;
-            }
-            .main-header {
-                font-size: 3rem;
-                font-weight: bold;
-                color: #64b5f6;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-            .metric-card {
-                background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-                padding: 1.5rem;
-                border-radius: 1rem;
-                margin: 0.5rem 0;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            }
-            .conversion-result {
-                background: linear-gradient(135deg, #065f46 0%, #059669 100%);
-                padding: 2rem;
-                border-radius: 1rem;
-                border-left: 4px solid #10b981;
-                margin: 1rem 0;
-                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            }
-            .sticky-result {
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                z-index: 1000;
-                background: linear-gradient(135deg, #065f46 0%, #059669 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-                max-width: 300px;
-            }
-            .bookmark-card {
-                background: linear-gradient(135deg, #7c2d12 0%, #dc2626 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin: 0.5rem 0;
-                cursor: pointer;
-            }
-            .history-item {
-                background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin: 0.5rem 0;
-                border-left: 3px solid #6366f1;
-            }
-        </style>
-        """
-    else:
-        return """
-        <style>
-            .main-header {
-                font-size: 3rem;
-                font-weight: bold;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-            .metric-card {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 1.5rem;
-                border-radius: 1rem;
-                margin: 0.5rem 0;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                color: white;
-            }
-            .conversion-result {
-                background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-                padding: 2rem;
-                border-radius: 1rem;
-                border-left: 4px solid #10b981;
-                margin: 1rem 0;
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-                animation: fadeIn 0.5s ease-in;
-            }
-            .sticky-result {
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                z-index: 1000;
-                background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                max-width: 300px;
-            }
-            .bookmark-card {
-                background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin: 0.5rem 0;
-                cursor: pointer;
-                transition: transform 0.2s;
-            }
-            .bookmark-card:hover {
-                transform: translateY(-2px);
-            }
-            .history-item {
-                background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin: 0.5rem 0;
-                border-left: 3px solid #6366f1;
-            }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        </style>
-        """
-
-st.markdown(get_theme_styles(), unsafe_allow_html=True)
-
 # Commodity Data
 COMMODITY_DATA = {
     "Oil & Liquids": {
@@ -180,38 +43,6 @@ COMMODITY_DATA = {
     },
     "Power/Electricity": {
         "Electricity": {"units": ["mwh", "kwh", "gwh", "mmbtu", "therms"]}
-    }
-}
-
-# Predefined Scenarios
-SCENARIOS = {
-    "Typical Jet Fuel Trade": {
-        "category": "Oil & Liquids",
-        "commodity": "Jet Fuel",
-        "from_unit": "barrels",
-        "to_unit": "metric tons",
-        "value": 1000
-    },
-    "Natural Gas Pipeline Delivery": {
-        "category": "Natural Gas",
-        "commodity": "Natural Gas",
-        "from_unit": "mcf",
-        "to_unit": "mmbtu",
-        "value": 10000
-    },
-    "Wheat Export Deal": {
-        "category": "Agricultural",
-        "commodity": "Wheat",
-        "from_unit": "bushels",
-        "to_unit": "metric tons",
-        "value": 5000
-    },
-    "Coal Power Plant": {
-        "category": "Coal",
-        "commodity": "Thermal Coal",
-        "from_unit": "metric tons",
-        "to_unit": "mmbtu",
-        "value": 1000
     }
 }
 
@@ -253,17 +84,9 @@ CURRENCY_DATA = {
 }
 
 # Utility Functions
-def calculate_density_from_api(api_gravity):
-    """Calculate density from API gravity"""
-    return 141.5 / (131.5 + api_gravity)
-
-def calculate_api_from_density(density):
-    """Calculate API gravity from density"""
-    return 141.5 / density - 131.5
-
 def convert_oil_units(value, from_unit, to_unit, density=None, api_gravity=None):
     if density is None and api_gravity is not None:
-        density = calculate_density_from_api(api_gravity)
+        density = 141.5 / (131.5 + api_gravity)
     elif density is None:
         density = 0.85
     
@@ -385,15 +208,6 @@ def format_number(value, decimals=2):
     else:
         return f"{value:.{decimals+2}f}"
 
-def add_to_history(conversion_data):
-    """Add conversion to history"""
-    if len(st.session_state.conversion_history) >= 10:
-        st.session_state.conversion_history.pop(0)
-    st.session_state.conversion_history.append({
-        **conversion_data,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    })
-
 def create_comparison_chart(conversions):
     """Create a comparison chart for multiple conversions"""
     if not conversions:
@@ -448,75 +262,8 @@ def create_gauge_chart(original_value, converted_value, from_unit, to_unit):
     fig.update_layout(height=300)
     return fig
 
-# Header with theme toggle
-col1, col2 = st.columns([4, 1])
-with col1:
-    st.markdown('<h1 class="main-header">🏭 Commodities Trading Converter</h1>', unsafe_allow_html=True)
-with col2:
-    if st.button("🌙" if not st.session_state.dark_mode else "☀️", help="Toggle Dark/Light Mode"):
-        st.session_state.dark_mode = not st.session_state.dark_mode
-        st.rerun()
-
-# Settings Panel
-with st.sidebar:
-    st.header("⚙️ Settings")
-    
-    # Auto-calculation toggle
-    st.session_state.auto_calculate = st.checkbox("Auto-calculate on input change", value=st.session_state.auto_calculate)
-    
-    # Wizard mode toggle
-    st.session_state.wizard_mode = st.checkbox("Enable guided wizard", value=st.session_state.wizard_mode)
-    
-    st.markdown("---")
-    
-    # Density/API Calculator
-    st.subheader("🧮 Density/API Calculator")
-    calc_type = st.selectbox("Calculate:", ["Density from API", "API from Density"])
-    
-    if calc_type == "Density from API":
-        api_input = st.number_input("API Gravity (°)", value=35.0, min_value=0.0, max_value=100.0)
-        density_result = calculate_density_from_api(api_input)
-        st.success(f"Density: {density_result:.3f} g/cm³")
-    else:
-        density_input = st.number_input("Density (g/cm³)", value=0.85, min_value=0.1, max_value=2.0, step=0.001)
-        api_result = calculate_api_from_density(density_input)
-        st.success(f"API Gravity: {api_result:.1f}°")
-    
-    st.markdown("---")
-    
-    # Bookmarks
-    st.subheader("📚 Bookmarks")
-    if st.session_state.bookmarks:
-        for i, bookmark in enumerate(st.session_state.bookmarks):
-            if st.button(f"📌 {bookmark['name']}", key=f"bookmark_{i}"):
-                st.session_state.selected_bookmark = bookmark
-                st.rerun()
-    else:
-        st.info("No bookmarks saved yet")
-    
-    if st.button("🗑️ Clear Bookmarks") and st.session_state.bookmarks:
-        st.session_state.bookmarks = []
-        st.rerun()
-    
-    st.markdown("---")
-    
-    # Conversion History
-    st.subheader("📜 Recent Conversions")
-    if st.session_state.conversion_history:
-        for i, conv in enumerate(reversed(st.session_state.conversion_history[-5:])):
-            st.markdown(f"""
-            <div class="history-item">
-                <small>{conv['timestamp']}</small><br>
-                <strong>{conv['commodity']}</strong><br>
-                {format_number(conv['input_value'])} {conv['from_unit']} → {format_number(conv['result'])} {conv['to_unit']}
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.info("No conversions yet")
-    
-    if st.button("🗑️ Clear History") and st.session_state.conversion_history:
-        st.session_state.conversion_history = []
-        st.rerun()
+# Header
+st.markdown('<h1 style="text-align: center; color: #2E86AB; font-size: 3rem;">🏭 Commodities Trading Converter</h1>', unsafe_allow_html=True)
 
 # Main Application Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -529,77 +276,25 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 
 # Tab 1: Unit Converter
 with tab1:
-    if st.session_state.wizard_mode:
-        st.info("🧙‍♂️ **Wizard Mode**: Follow the steps below for guided conversion")
-        
-        # Step 1: Select Scenario or Custom
-        st.subheader("Step 1: Choose Your Conversion Type")
-        conversion_type = st.radio("", ["Use Predefined Scenario", "Custom Conversion"])
-        
-        if conversion_type == "Use Predefined Scenario":
-            scenario_name = st.selectbox("Select Scenario:", list(SCENARIOS.keys()))
-            scenario = SCENARIOS[scenario_name]
-            
-            category = scenario["category"]
-            commodity = scenario["commodity"]
-            from_unit = scenario["from_unit"]
-            to_unit = scenario["to_unit"]
-            input_value = st.number_input("Enter Value:", value=float(scenario["value"]))
-        else:
-            # Step 2: Select Commodity
-            st.subheader("Step 2: Select Commodity")
-            category = st.selectbox("Category:", list(COMMODITY_DATA.keys()))
-            commodity = st.selectbox("Commodity:", list(COMMODITY_DATA[category].keys()))
-            
-            # Step 3: Set Units and Value
-            st.subheader("Step 3: Set Conversion Parameters")
-            available_units = COMMODITY_DATA[category][commodity]["units"]
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                from_unit = st.selectbox("From Unit:", available_units)
-            with col2:
-                to_unit = st.selectbox("To Unit:", available_units)
-            
-            input_value = st.number_input("Enter Value:", value=1.0, min_value=0.0)
-    else:  
-        # Check if scenario was selected
-        if 'selected_scenario' in st.session_state:
-            scenario = st.session_state.selected_scenario
-            category = scenario["category"]
-            commodity = scenario["commodity"]
-            from_unit = scenario["from_unit"]
-            to_unit = scenario["to_unit"]
-            input_value = st.number_input("Enter Value:", value=float(scenario["value"]))
-            del st.session_state.selected_scenario
-        elif 'selected_bookmark' in st.session_state:
-            bookmark = st.session_state.selected_bookmark
-            category = bookmark["category"]
-            commodity = bookmark["commodity"]
-            from_unit = bookmark["from_unit"]
-            to_unit = bookmark["to_unit"]
-            input_value = st.number_input("Enter Value:", value=float(bookmark.get("value", 1.0)))
-            del st.session_state.selected_bookmark
-        else:
-            col1, col2 = st.columns(2)
-            with col1:
-                category = st.selectbox("Category:", list(COMMODITY_DATA.keys()))
-            with col2:
-                commodity = st.selectbox("Commodity:", list(COMMODITY_DATA[category].keys()))
-            
-            available_units = COMMODITY_DATA[category][commodity]["units"]
-            
-            col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
-            with col1:
-                input_value = st.number_input("Value:", value=1.0, min_value=0.0)
-            with col2:
-                from_unit = st.selectbox("From:", available_units)
-            with col3:
-                to_unit = st.selectbox("To:", available_units)
-            with col4:
-                if st.button("🔄", help="Swap units"):
-                    from_unit, to_unit = to_unit, from_unit
-                    st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        category = st.selectbox("Category:", list(COMMODITY_DATA.keys()))
+    with col2:
+        commodity = st.selectbox("Commodity:", list(COMMODITY_DATA[category].keys()))
+    
+    available_units = COMMODITY_DATA[category][commodity]["units"]
+    
+    col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
+    with col1:
+        input_value = st.number_input("Value:", value=1.0, min_value=0.0)
+    with col2:
+        from_unit = st.selectbox("From:", available_units)
+    with col3:
+        to_unit = st.selectbox("To:", available_units)
+    with col4:
+        if st.button("🔄", help="Swap units"):
+            from_unit, to_unit = to_unit, from_unit
+            st.rerun()
     
     # Additional Parameters
     additional_params = {}
@@ -670,76 +365,43 @@ with tab1:
             st.error(f"Conversion error: {str(e)}")
             return None
     
-    # Auto-calculation or manual conversion
-    if st.session_state.auto_calculate and input_value > 0:
+    # Convert button
+    if st.button("🔄 Convert", type="primary") and input_value > 0:
         result = perform_conversion()
-        show_result = True
-    else:
-        show_result = False
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            if st.button("🔄 Convert", type="primary"):
-                result = perform_conversion()
-                show_result = True
-        with col2:
-            if st.button("💾 Save as Bookmark"):
-                bookmark_name = st.text_input("Bookmark name:", value=f"{commodity} {from_unit}→{to_unit}")
-                if bookmark_name:
-                    st.session_state.bookmarks.append({
-                        "name": bookmark_name,
-                        "category": category,
-                        "commodity": commodity,
-                        "from_unit": from_unit,
-                        "to_unit": to_unit,
-                        "value": input_value,
-                        **additional_params
-                    })
-                    st.success("Bookmark saved!")
-    
-    # Display Results
-    if show_result and result is not None:
-        # Add to history
-        conversion_data = {
-            "category": category,
-            "commodity": commodity,
-            "input_value": input_value,
-            "from_unit": from_unit,
-            "to_unit": to_unit,
-            "result": result,
-            **additional_params
-        }
-        add_to_history(conversion_data)
         
-        # Main result display
-        st.markdown(f"""
-        <div class="conversion-result">
-            <h3>✅ Conversion Result</h3>
-            <p><strong>{format_number(input_value)} {from_unit}</strong> of <strong>{commodity}</strong> equals:</p>
-            <h2 style="color: #059669;">{format_number(result)} {to_unit}</h2>
-            <p><small>Converted at {datetime.now().strftime('%H:%M:%S')}</small></p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Visualization
-        col1, col2 = st.columns(2)
-        with col1:
-            # Gauge chart
-            gauge_fig = create_gauge_chart(input_value, result, from_unit, to_unit)
-            st.plotly_chart(gauge_fig, use_container_width=True)
-        
-        with col2:
-            # Conversion factor display
-            conversion_factor = result / input_value if input_value != 0 else 0
-            st.metric(
-                label="Conversion Factor",
-                value=f"{conversion_factor:.6f}",
-                delta=f"1 {from_unit} = {conversion_factor:.6f} {to_unit}"
-            )
+        if result is not None:
+            # Main result display
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); 
+                        padding: 2rem; border-radius: 1rem; border-left: 4px solid #10b981; 
+                        margin: 1rem 0; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
+                <h3>✅ Conversion Result</h3>
+                <p><strong>{format_number(input_value)} {from_unit}</strong> of <strong>{commodity}</strong> equals:</p>
+                <h2 style="color: #059669;">{format_number(result)} {to_unit}</h2>
+                <p><small>Converted at {datetime.now().strftime('%H:%M:%S')}</small></p>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Unit reference
-            st.markdown("**Quick Reference:**")
-            st.markdown(f"- 1 {from_unit} = {conversion_factor:.4f} {to_unit}")
-            st.markdown(f"- 1 {to_unit} = {1/conversion_factor:.4f} {from_unit}")
+            # Visualization
+            col1, col2 = st.columns(2)
+            with col1:
+                # Gauge chart
+                gauge_fig = create_gauge_chart(input_value, result, from_unit, to_unit)
+                st.plotly_chart(gauge_fig, use_container_width=True)
+            
+            with col2:
+                # Conversion factor display
+                conversion_factor = result / input_value if input_value != 0 else 0
+                st.metric(
+                    label="Conversion Factor",
+                    value=f"{conversion_factor:.6f}",
+                    delta=f"1 {from_unit} = {conversion_factor:.6f} {to_unit}"
+                )
+                
+                # Unit reference
+                st.markdown("**Quick Reference:**")
+                st.markdown(f"- 1 {from_unit} = {conversion_factor:.4f} {to_unit}")
+                st.markdown(f"- 1 {to_unit} = {1/conversion_factor:.4f} {from_unit}")
     
     # Cheat Sheet
     with st.expander("📋 Unit Conversion Cheat Sheet"):
@@ -889,22 +551,11 @@ with tab4:
     with col2:
         batch_to = st.selectbox("To Unit:", batch_units, key="batch_to")
     
-    # Input methods
-    input_method = st.radio("Input Method:", ["Manual Entry", "Upload CSV"])
-    
-    if input_method == "Manual Entry":
-        values_input = st.text_area("Enter values (one per line):", 
-                                   value="1000\n2000\n3000\n4000\n5000",
-                                   height=100)
-        values = [float(v.strip()) for v in values_input.split('\n') if v.strip()]
-    else:
-        uploaded_file = st.file_uploader("Upload CSV file", type="csv")
-        if uploaded_file:
-            df = pd.read_csv(uploaded_file)
-            values_column = st.selectbox("Select values column:", df.columns)
-            values = df[values_column].tolist()
-        else:
-            values = []
+    # Manual Entry
+    values_input = st.text_area("Enter values (one per line):", 
+                               value="1000\n2000\n3000\n4000\n5000",
+                               height=100)
+    values = [float(v.strip()) for v in values_input.split('\n') if v.strip()]
     
     if st.button("🔄 Convert Batch", type="primary") and values:
         batch_results = []
