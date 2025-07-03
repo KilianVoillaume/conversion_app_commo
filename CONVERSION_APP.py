@@ -456,67 +456,7 @@ with col2:
     if st.button("🌙" if not st.session_state.dark_mode else "☀️", help="Toggle Dark/Light Mode"):
         st.session_state.dark_mode = not st.session_state.dark_mode
         st.rerun()
-
-# Settings Panel
-with st.sidebar:
-    st.header("⚙️ Settings")
-    
-    # Auto-calculation toggle
-    st.session_state.auto_calculate = st.checkbox("Auto-calculate on input change", value=st.session_state.auto_calculate)
-    
-    # Wizard mode toggle
-    st.session_state.wizard_mode = st.checkbox("Enable guided wizard", value=st.session_state.wizard_mode)
-    
-    st.markdown("---")
-    
-    # Density/API Calculator
-    st.subheader("🧮 Density/API Calculator")
-    calc_type = st.selectbox("Calculate:", ["Density from API", "API from Density"])
-    
-    if calc_type == "Density from API":
-        api_input = st.number_input("API Gravity (°)", value=35.0, min_value=0.0, max_value=100.0)
-        density_result = calculate_density_from_api(api_input)
-        st.success(f"Density: {density_result:.3f} g/cm³")
-    else:
-        density_input = st.number_input("Density (g/cm³)", value=0.85, min_value=0.1, max_value=2.0, step=0.001)
-        api_result = calculate_api_from_density(density_input)
-        st.success(f"API Gravity: {api_result:.1f}°")
-    
-    st.markdown("---")
-    
-    # Bookmarks
-    st.subheader("📚 Bookmarks")
-    if st.session_state.bookmarks:
-        for i, bookmark in enumerate(st.session_state.bookmarks):
-            if st.button(f"📌 {bookmark['name']}", key=f"bookmark_{i}"):
-                st.session_state.selected_bookmark = bookmark
-                st.rerun()
-    else:
-        st.info("No bookmarks saved yet")
-    
-    if st.button("🗑️ Clear Bookmarks") and st.session_state.bookmarks:
-        st.session_state.bookmarks = []
-        st.rerun()
-    
-    st.markdown("---")
-    
-    # Conversion History
-    st.subheader("📜 Recent Conversions")
-    if st.session_state.conversion_history:
-        for i, conv in enumerate(reversed(st.session_state.conversion_history[-5:])):
-            st.markdown(f"""
-            <div class="history-item">
-                <small>{conv['timestamp']}</small><br>
-                <strong>{conv['commodity']}</strong><br>
-                {format_number(conv['input_value'])} {conv['from_unit']} → {format_number(conv['result'])} {conv['to_unit']}
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.info("No conversions yet")
-    
-    if st.button("🗑️ Clear History") and st.session_state.conversion_history:
-        st.session_state.conversion_history = []
-        st.rerun()
+            
 
 # Main Application Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
