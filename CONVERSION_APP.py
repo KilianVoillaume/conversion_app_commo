@@ -562,21 +562,7 @@ with tab1:
                 to_unit = st.selectbox("To Unit:", available_units)
             
             input_value = st.number_input("Enter Value:", value=1.0, min_value=0.0)
-    else:
-        # Regular Mode
-        st.subheader("Quick Conversion")
-        
-        # Predefined Scenarios
-        st.markdown("**Quick Scenarios:**")
-        scenario_cols = st.columns(len(SCENARIOS))
-        for i, (name, scenario) in enumerate(SCENARIOS.items()):
-            with scenario_cols[i]:
-                if st.button(f"⚡ {name}", key=f"scenario_{i}"):
-                    st.session_state.selected_scenario = scenario
-                    st.rerun()
-        
-        st.markdown("---")
-        
+    else:  
         # Check if scenario was selected
         if 'selected_scenario' in st.session_state:
             scenario = st.session_state.selected_scenario
