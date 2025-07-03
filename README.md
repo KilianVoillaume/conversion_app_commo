@@ -1,6 +1,8 @@
 # Commodities Trading Converter
 
 A professional-grade Streamlit app to convert and analyze units, volumes, and currencies across a wide range of commodities — built for traders, analysts, and anyone navigating the energy and commodities markets.
+You can access the Conversion App here:  
+👉 [conversionappcommo.streamlit.app](https://conversionappcommo.streamlit.app/)
 
 ---
 
@@ -17,11 +19,6 @@ Both apps allow you to:
 - Consult a built-in glossary of trading terms and measurement standards.
 
 The enhanced version adds visualizations with Plotly, a more refined UI, and advanced usability features.
-
----
-
-You can access the Conversion App here:  
-👉 [conversionappcommo.streamlit.app](https://conversionappcommo.streamlit.app/)
 
 ---
 
