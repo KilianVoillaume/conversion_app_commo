@@ -93,6 +93,22 @@ UNIT_CONVERSIONS = {
     "kcal": 4.184e-6 # GJ per kcal
 }
 
+# Currency data with flags
+CURRENCY_DATA = {
+    "USD": {"flag": "🇺🇸", "name": "US Dollar"},
+    "EUR": {"flag": "🇪🇺", "name": "Euro"},
+    "GBP": {"flag": "🇬🇧", "name": "British Pound"},
+    "JPY": {"flag": "🇯🇵", "name": "Japanese Yen"},
+    "CAD": {"flag": "🇨🇦", "name": "Canadian Dollar"},
+    "AUD": {"flag": "🇦🇺", "name": "Australian Dollar"},
+    "CHF": {"flag": "🇨🇭", "name": "Swiss Franc"},
+    "CNY": {"flag": "🇨🇳", "name": "Chinese Yuan"},
+    "INR": {"flag": "🇮🇳", "name": "Indian Rupee"},
+    "BRL": {"flag": "🇧🇷", "name": "Brazilian Real"},
+    "RUB": {"flag": "🇷🇺", "name": "Russian Ruble"},
+    "MXN": {"flag": "🇲🇽", "name": "Mexican Peso"}
+}
+
 def calculate_density_from_api(api_gravity):
     return 141.5 / (131.5 + api_gravity)
 
@@ -220,6 +236,11 @@ def format_number(value, decimals=2):
     else:
         return f"{value:.{decimals+2}f}"
 
+def get_currency_display(currency_code):
+    """Returns formatted currency string with flag and code"""
+    currency_info = CURRENCY_DATA.get(currency_code, {"flag": "🌍", "name": currency_code})
+    return f"{currency_info['flag']} {currency_code}"
+
 st.markdown('<h1 class="main-header">🏭 Commodities Trading Converter</h1>', unsafe_allow_html=True)
 tab1, tab2, tab3 = st.tabs(["🔄 Unit & Volume Conversion", "💱 Currency Conversion", "📖 Glossary"])
 
@@ -340,7 +361,9 @@ with tab1:
 with tab2:
     st.header("Currency Conversion")
     
-    major_currencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY", "INR", "BRL", "RUB", "MXN"]
+    # Create currency options with flags
+    currency_options = [get_currency_display(code) for code in CURRENCY_DATA.keys()]
+    currency_codes = list(CURRENCY_DATA.keys())
     
     col1, col2, col3 = st.columns(3)
     
@@ -348,10 +371,12 @@ with tab2:
         amount = st.number_input("Amount", value=1.0, min_value=0.0, step=0.01)
     
     with col2:
-        from_currency = st.selectbox("From Currency", major_currencies, index=0)
+        from_currency_display = st.selectbox("From Currency", currency_options, index=0)
+        from_currency = currency_codes[currency_options.index(from_currency_display)]
     
     with col3:
-        to_currency = st.selectbox("To Currency", major_currencies, index=1)
+        to_currency_display = st.selectbox("To Currency", currency_options, index=1)
+        to_currency = currency_codes[currency_options.index(to_currency_display)]
     
     rate_option = st.radio("Exchange Rate Option", ["Fetch Live Rate", "Enter Custom Rate"])
     
@@ -370,8 +395,8 @@ with tab2:
                     st.markdown(f"""
                     <div class="conversion-result">
                         <h3>Currency Conversion Result</h3>
-                        <p><strong>{amount:,.2f} {from_currency}</strong> equals:</p>
-                        <h2 style="color: #28a745;">{converted_amount:,.2f} {to_currency}</h2>
+                        <p><strong>{amount:,.2f} {get_currency_display(from_currency)}</strong> equals:</p>
+                        <h2 style="color: #28a745;">{converted_amount:,.2f} {get_currency_display(to_currency)}</h2>
                         <p><small>Exchange rate: 1 {from_currency} = {exchange_rate:.4f} {to_currency}</small></p>
                         <p><small>Rates updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</small></p>
                     </div>
@@ -381,8 +406,8 @@ with tab2:
                 st.markdown(f"""
                 <div class="conversion-result">
                     <h3>Currency Conversion Result</h3>
-                    <p><strong>{amount:,.2f} {from_currency}</strong> equals:</p>
-                    <h2 style="color: #28a745;">{converted_amount:,.2f} {to_currency}</h2>
+                    <p><strong>{amount:,.2f} {get_currency_display(from_currency)}</strong> equals:</p>
+                    <h2 style="color: #28a745;">{converted_amount:,.2f} {get_currency_display(to_currency)}</h2>
                     <p><small>Custom exchange rate: 1 {from_currency} = {custom_rate:.4f} {to_currency}</small></p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -440,13 +465,6 @@ This application provides accurate conversions for:
 
 Built for commodities trading professionals.
 """)
-
-st.sidebar.header("🔧 Features")
-st.sidebar.write("✅ Multiple commodity categories")
-st.sidebar.write("✅ Custom parameter inputs")
-st.sidebar.write("✅ Live exchange rates")
-st.sidebar.write("✅ Professional accuracy")
-st.sidebar.write("✅ Easy-to-use interface")
 
 st.sidebar.header("📝 Notes")
 st.sidebar.warning("Always verify critical conversions with official sources. Default values are industry standards but may vary.")
